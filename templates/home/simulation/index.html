@@ -1,0 +1,118 @@
+{% extends 'home/simulation/base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+{% if not current_simulation %}
+
+<div class="text-center" style="text-align: center;">
+    <div class="text-center pt-5">
+        <img src="{% static 'notfound.png' %}" style="width: 200px;" alt="">
+        <p style="font-size:25px" class="my-4 text-secondary">Select any section to view simulation</p>
+    </div>
+</div>
+
+
+{% else %}
+
+<div class="px-3">
+    
+    <div class="d-flex">
+
+        {% for step in current_simulation.get_all_steps %}
+            {% with mylist=request.session.user_course|get_item:current_simulation.id %}
+
+            <a class="text-decoration-none" href="{% url 'simulation:single_simulation' step.simulation.id step.id %}">
+                <div class="border d-flex text-secondary align-items-center p-2 px-3 mr-3 
+                    {% if current_step == step %} bg-light {% endif %} mk-pointer radius-10">
+                    <span class="material-icons mr-2 {% if step.id in mylist and current_step.id != step.id %}text-success{% else %}text-secondary{% endif %}">
+                            {% if step.id in mylist %}
+                                check_circle
+                            {% else %}
+                                radio_button_unchecked
+                            {% endif %}
+                    </span>
+
+                    {{ step.name }}
+                </div>
+            </a>
+
+            {% endwith %}
+
+        {% endfor %}
+    </div>
+
+    <div class="pt-4">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h2>{{ current_step.name }}</h2>
+            </div>
+
+            <div class="col-sm-6 d-flex align-items-center justify-content-end">
+                {% if current_step.previous %}
+                    <a href="{% url 'simulation:single_simulation' current_step.simulation.id current_step.previous.id %}" type="button"
+                        class="d-flex align-items-center btn btn-primary mx-1 radius-10">
+                        <span class="mr-1 material-icons my-0 py-0" style="font-size: 15px;">
+                            arrow_back_ios
+                        </span>
+                        Back
+                    </a>
+
+                {% else %}
+                    <button disabled type="button"
+                        class="d-flex align-items-center btn btn-primary mx-1 radius-10">
+                        <span class="mr-1 material-icons my-0 py-0" style="font-size: 15px;">
+                            arrow_back_ios
+                        </span>
+                        Back
+                    </button>
+
+
+                {% endif %}
+
+
+                {% if current_step.next %}
+                <a href="{% url 'simulation:single_simulation' current_step.simulation.id current_step.next.id %}" type="button"
+                    class="d-flex align-items-center btn btn-primary mx-2 radius-10">
+                    Next
+                    <span class="ml-1 material-icons my-0 py-0" style="font-size: 15px;">
+                        arrow_forward_ios
+                    </span>
+                </a>
+                
+                {% else %}
+                <button disabled type="button" class="d-flex align-items-center btn btn-primary mx-2 radius-10">
+                    Next
+                    <span class="ml-1 material-icons my-0 py-0" style="font-size: 15px;">
+                        arrow_forward_ios
+                    </span>
+                </button>
+                
+                
+                {% endif %}
+                
+
+
+            </div>
+        </div>
+        <p>{{ current_step.description }}</p>
+
+        <div class="pt-3">
+            {% if current_step.image %}
+                <img src="media/{{ current_step.image}}" class="border" style="width: 100%; border-radius: 10px;" alt="">
+            {% endif %}
+
+            {% if current_step.video_id %}
+            <iframe style="width: 100%; height:450px; border-radius: 10px;" src="https://www.youtube.com/embed/{{ current_step.video_id }}?autoplay=1&ontrols=0" title="YouTube video player"
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+{% endif %}
+
+{% endblock content %}

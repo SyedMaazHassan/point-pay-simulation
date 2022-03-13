@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point pay - simulation</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'logo3.png' %}">
+    <base href="http://127.0.0.1:8000/">
+    <style>
+        .mk-point {
+            cursor: pointer;
+        }
+
+        .radius-10 {
+            border-radius: 10px;
+        }
+
+        .inline-border {
+            -webkit-box-shadow: inset 0px 0px 0px 10px #f00;
+            -moz-box-shadow: inset 0px 0px 0px 10px #f00;
+            box-shadow: inset 0px 0px 0px 10px #f00;
+        }
+
+        .select-type {
+            -webkit-box-shadow: inset 0px 0px 0px 2px #0478c3;
+            -moz-box-shadow: inset 0px 0px 0px 2px #0478c3;
+            box-shadow: inset 0px 0px 0px 2px #0478c3;
+        }
+
+        .simulation-option{
+            transition-duration: 0.25s;
+        }
+
+        .simulation-option:hover{
+            -webkit-box-shadow: inset 0px 0px 0px 2px #eeeeee;
+            -moz-box-shadow: inset 0px 0px 0px 2px #eeeeee;
+            box-shadow: inset 0px 0px 0px 2px #eeeeee;
+            transition-duration: 0.25s;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="feedbackForm" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kindly provide feedback</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                <form action="{% url 'simulation:submit_feedback' %}" method="post">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <input type="email" placeholder="Email address" class="radius-10 mb-3 form-control" name="email" required>
+                        <div class="form-group">
+                        <textarea class="form-control radius-10" name="feedback" placeholder="Your feedback" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary radius-10" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary radius-10">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid pt-4" style="padding: 10%; padding-bottom: 5px;">
+        <div class="row mb-5">
+            <div class="col-sm-6">
+                <a href="{% url 'simulation:index' %}">
+                    <img src="{% static 'sim.png' %}" class="mt-2" style="width: 180px;" alt="">
+                </a>
+            </div>
+
+            <div class="col-sm-6 d-flex align-items-center justify-content-end">
+                <button type="button" class="btn btn-primary radius-10" data-toggle="modal" data-target="#feedbackForm">Write feedback</button>
+                <a href="{% url 'authentication:logout' %}" type="button" class="mx-3 d-flex align-items-center btn btn-secondary mx-2 radius-10">
+                    Logout
+                    <span class="ml-1 material-icons my-0 ml-2 py-0" style="font-size: 15px;">
+                        logout
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        {% for message in messages %}
+        <div class="alert alert-success radius-10 alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <div class="mt-0">
+            <div class="row">
+                <div class="col-sm-3">
+                    {% for simulation in all_simulations %}
+                    <a href="{% url 'simulation:single_simulation' simulation.id simulation.get_first_step.id %}" class="text-decoration-none">
+
+                    <div class="row border simulation-option radius-10 mk-pointer mb-4 {% if current_simulation == simulation %}select-type{% endif %}">
+                        <div class="col-sm-4 d-flex align-items-center justify-content-center">
+                            <img src="media/{{ simulation.img }}" style="width: 100%;" alt="">
+                        </div>
+
+                        <div class="d-flex align-items-center col-sm-8">
+                            <div class="py-3 text-dark">
+                                <h5>{{ simulation.heading }}</h5>
+                                <p class="mt-2 mb-0">{{ simulation.sub_heading }}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    </a>
+
+                    {% endfor %}
+
+
+                </div>
+
+                <div class="col-sm-9">
+                    {% block content %}
+                    
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

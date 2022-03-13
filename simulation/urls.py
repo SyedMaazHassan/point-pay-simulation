@@ -1,0 +1,21 @@
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from . import views
+from django.urls import path, include
+
+
+app_name = "simulation"
+urlpatterns = [
+    path("", view=views.index, name="index"),
+    path(
+        "<sim_id>/step/<step_id>",
+        view=views.single_simulation,
+        name="single_simulation",
+    ),
+    path("submit_feedback", views.submit_feedback, name="submit_feedback"),
+]
+
+urlpatterns = urlpatterns + static(
+    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+)

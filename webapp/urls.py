@@ -20,7 +20,7 @@ from django.conf import settings
 from simulation.views import *
 
 urlpatterns = [
-    # path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     path("authentication/", include("authentication.urls")),
     path("", view=redirect_now, name="simulation_index"),
     path("simulation/", include("simulation.urls")),
